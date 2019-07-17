@@ -69,12 +69,13 @@ export default class App extends React.Component {
                 {/* {console.log(this.state.data)} */}
                 {console.log(this.state.data)}
                 <LineChart width={1000} height={500} data={this.state.data}>
+                    <Tooltip/>
                     <XAxis dataKey="age" />
                     <YAxis />
                     <CartesianGrid stroke="#eee" strokeDasharray="5 5"/>
-                    <Line type="monotone" dataKey="income" stroke="#008080" />
-                    <Line type="monotone" dataKey="expenditure" stroke="#ff6644" />
-                    <Line type="monotone" dataKey="savings" stroke="#006400" />
+                    <Line type="monotone" dataKey="income" stroke="#008080" strokeWidth={2} />
+                    <Line type="monotone" dataKey="expenditure" stroke="#ff6644" strokeWidth={2} />
+                    <Line type="monotone" dataKey="savings" stroke="#006400" strokeWidth={2} />
                 </LineChart>
             </div>
         );

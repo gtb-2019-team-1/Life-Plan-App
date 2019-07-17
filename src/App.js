@@ -7,7 +7,7 @@ const LIFE_PLAN_APPS_ENDPOINT = "http://localhost:5000/data";
 
 
 export default class App extends React.Component {
-  constructor(props) {
+  constructor(props){
     super(props);
     let init_data = [];
     for(let age = 0; age <= 100; age++){
@@ -15,40 +15,36 @@ export default class App extends React.Component {
     }
     
     this.state = {
-      weather:'',
-      starting_age:20,
+      starting_age:'',
       data: init_data,
-      got_data: [{age: 20, income: 200, expenditure:100, savings:0}, {age: 21, income: 200, expenditure:150, savings:50}, {age: 22, income: 300, expenditure:200, savings:150}]
+      got_data:[
+          {age: 20, income: 200, expenditure:100, savings:0},
+          {age: 21, income: 200, expenditure:150, savings:50},
+          {age: 22, income: 300, expenditure:200, savings:150}
+      ]
     };
-    this.annualIncomeHandleChange = this.annualIncomeHandleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleUpdateStartingAge = this.handleUpdateStartingAge.bind(this);
     this.getData = this.getData.bind(this);
     this.handleGetByAPI = this.hrandleGetByAPI.bind(this);
   }
   
-  componentDidMount() {}
+  componentDidMount(){}
   
-  componentWillUnmount() {}
-  
-  annualIncomeHandleChange(event) {
-    this.setState({income: event.target.value});
+  componentWillUnmount(){}
+
+  handleUpdateStartingAge(event){
+    this.setState({starting_age: event.target.value});
   }
-  
-  handleSubmit(event) {
-    this.setState((state) => {
-      return {
-        data: state.data.concat({age: 120, income: parseInt(state.income)})
-      }
-    });
-    event.preventDefault();
-  }
-  hrandleGetByAPI(event){
+
+  hrandleGetByAPI(){
     axios
       .get(LIFE_PLAN_APPS_ENDPOINT)
       .then(response => {
         console.log(response.data)
-        this.setState({
-          weather:response.data[0].weather
+        this.setState((state) => {
+          return{
+            weather:response.data[0].weather
+          }
         });
       })
       .catch(() => {
@@ -71,24 +67,20 @@ export default class App extends React.Component {
     event.preventDefault();
   }
   
-  render() {
+  render(){
     return (
       <div>
-        {/*
-        <form onSubmit={this.handleSubmit}>
+        <form>
           <label>
-            income:
-            <input name="income" value={this.state.income} type="text" onChange={this.annualIncomeHandleChange}/>
+            starting_age:
+            <input name="starting_age" value={this.state.starting_age} type="text" onChange={this.handleUpdateStartingAge} />
           </label>
-          <input type="submit" value="Submit" />
+          <br />this.state.starting_age: {this.state.starting_age}<br />
         </form>
-        */}
         <a onClick={this.getData} data={this.state.data} got_data={this.state.got_data}>げっとぐらふでーた</a>
         <br />
         <a onClick={this.handleGetByAPI} data={this.state.weather}>さーばーさんでーたをください</a>
         <br />
-        {this.state.weather}
-        {/* {console.log(this.state.data)} */}
         <LineChart width={1000} height={500} data={this.state.data}>
           <Tooltip/>
           <XAxis dataKey="age" />

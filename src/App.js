@@ -1,6 +1,10 @@
 import React from 'react';
 import './App.css';
 import {LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip} from 'recharts';
+import axios from 'axios';
+
+const LIFE_PLAN_APPS_ENDPOINT = "http://localhost:5000/data";
+
 
 export default class App extends React.Component {
     constructor(props) {
@@ -11,6 +15,7 @@ export default class App extends React.Component {
         }
         
         this.state = {
+            weather:'',
             starting_age:20,
             data: init_data,
             got_data: [{age: 20, income: 200, expenditure:100, savings:0}, {age: 21, income: 200, expenditure:150, savings:50}, {age: 22, income: 300, expenditure:200, savings:150}]
@@ -18,6 +23,7 @@ export default class App extends React.Component {
         this.annualIncomeHandleChange = this.annualIncomeHandleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.getData = this.getData.bind(this);
+        this.handleGetByAPI = this.hrandleGetByAPI.bind(this);
     }
   
     componentDidMount() {}
@@ -36,7 +42,19 @@ export default class App extends React.Component {
         });
         event.preventDefault();
     }
-  
+    hrandleGetByAPI(event){
+        axios
+            .get(LIFE_PLAN_APPS_ENDPOINT)
+            .then(response => {
+              console.log(response.data)
+              this.setState({
+                  weather:response.data[0].weather
+              });
+            })
+            .catch(() => {
+              console.log('APIとの通信失敗');
+            });
+    }
     getData(event){
         let copied_data = this.state.data.slice();
         let copied_got_data = this.state.got_data.slice();
@@ -65,9 +83,12 @@ export default class App extends React.Component {
                     <input type="submit" value="Submit" />
                 </form>
                 */}
-                <a onClick={this.getData} data={this.state.data} got_data={this.state.got_data}>げっと！</a>
+                <a onClick={this.getData} data={this.state.data} got_data={this.state.got_data}>げっとぐらふでーた</a>
+                <br />
+                <a onClick={this.handleGetByAPI} data={this.state.weather}>さーばーさんでーたをください</a>
+                <br />
+                {this.state.weather}
                 {/* {console.log(this.state.data)} */}
-                {console.log(this.state.data)}
                 <LineChart width={1000} height={500} data={this.state.data}>
                     <Tooltip/>
                     <XAxis dataKey="age" />

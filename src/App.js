@@ -4,23 +4,38 @@ import {LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Toolt
 import axios from 'axios';
 
 const LIFE_PLAN_APPS_ENDPOINT = "http://localhost:5000/data";
+const INTERVAL_OF_AVERAGE = 5;
 
 
 export default class App extends React.Component {
   constructor(props){
     super(props);
+
+    //１９歳以下  ２０～２４  ２５～２９  ３０～３４  ３５～３９  ４０～４４  ４５～４９  ５０～５４  ５５～５９  ６０～６４  ６５～６９  ７０歳以上
+    let average_income = [132,262,361,407,442,468,496,519,516,396,314,288,432,432,432,432,432]; // interval is 5
+    let average_expenditure = [186,186,186,183,183,183,183,183,215,215,215,215,215,215,215,215,215]; // ~34, 35~59, 60~
     let init_data = [];
-    for(let age = 0; age <= 100; age++){
+    let init_average_data = [];
+    let average_savings = 0;
+    for(let age = 20; age <= 100; age=age+INTERVAL_OF_AVERAGE){
       init_data.push({age:(age), income:0, expenditure:0, savings:0});
+      average_savings = average_savings + average_income[(age-20)/INTERVAL_OF_AVERAGE]-average_expenditure[(age-20)/INTERVAL_OF_AVERAGE];
+      init_average_data.push({
+        age:(age),
+        income:average_income[(age-20)/INTERVAL_OF_AVERAGE],
+        expenditure:average_expenditure[(age-20)/INTERVAL_OF_AVERAGE],
+        savings:average_savings
+      })
     }
-    
+    // console.log(init_average_data)
     this.state = {
       starting_age:'',
       data: init_data,
+      average_data:init_average_data,
       got_data:[
-          {age: 20, income: 200, expenditure:100, savings:0},
-          {age: 21, income: 200, expenditure:150, savings:50},
-          {age: 22, income: 300, expenditure:200, savings:150}
+        {age: 20, income: 200, expenditure:100, savings:0},
+        {age: 25, income: 200, expenditure:150, savings:50},
+        {age: 30, income: 300, expenditure:200, savings:150}
       ]
     };
     this.handleUpdateStartingAge = this.handleUpdateStartingAge.bind(this);
@@ -54,11 +69,34 @@ export default class App extends React.Component {
   getData(event){
     let copied_data = this.state.data.slice();
     let copied_got_data = this.state.got_data.slice();
-    for(let i=0; i<copied_got_data.length; i++){
-      for(let j=0; j<copied_data.length; j++){
-        if(copied_data[j].age === copied_got_data[i].age) copied_data[j] = copied_got_data[i];
+    let copied_average_data = this.state.average_data.slice();
+    let ratio_of_income = 1;
+    let ratio_of_expenditure = 1;
+
+    for(let i=0; i<copied_data.length; i++){
+      for(let j=0; j<copied_got_data.length; j++){
+        if(copied_data[i].age === copied_got_data[j].age){
+          copied_data[i] = copied_got_data[j];
+          // 収支について平均との比を求める
+          if(j==0){
+            ratio_of_income = copied_average_data[i].income / copied_got_data[j].income;
+            ratio_of_expenditure = copied_average_data[i].expenditure / copied_got_data[j].expenditure;
+          }else{
+            ratio_of_income = (ratio_of_income + copied_average_data[i].income / copied_got_data[j].income) / j;
+            ratio_of_expenditure = (ratio_of_expenditure + copied_average_data[i].expenditure / copied_got_data[j].expenditure) / j;
+          }
+          console.log("ratio_of_income is ", ratio_of_income)
+          console.log("ratio_of_expenditure is ", ratio_of_expenditure)
+        }
       }
     }
+
+    for(let i=copied_got_data.length; i<copied_data.length; i++){
+      copied_data[i].income = parseInt(copied_average_data[i].income * ratio_of_income);
+      copied_data[i].expenditure = parseInt(copied_average_data[i].expenditure * ratio_of_expenditure);
+      copied_data[i].savings = copied_average_data[i].savings + copied_average_data[i].income - copied_average_data[i].expenditure;
+    }
+    
     this.setState((state) => {
       return {
         data: copied_data
@@ -77,11 +115,22 @@ export default class App extends React.Component {
           </label>
           <br />this.state.starting_age: {this.state.starting_age}<br />
         </form>
-        <a onClick={this.getData} data={this.state.data} got_data={this.state.got_data}>げっとぐらふでーた</a>
+        <a onClick={this.getData} data={this.state.data} got_data={this.state.got_data} average_data={this.state.average_data}>げっとぐらふでーた</a>
         <br />
         <a onClick={this.handleGetByAPI} data={this.state.weather}>さーばーさんでーたをください</a>
         <br />
+        {/*** 入力値を取得した限り, 未入力の部分は入力値と平均との比をとってプロット ***/}
         <LineChart width={1000} height={500} data={this.state.data}>
+          <Tooltip/>
+          <XAxis dataKey="age" />
+          <YAxis />
+          <CartesianGrid stroke="#eee" strokeDasharray="5 5"/>
+          <Line type="monotone" dataKey="income" stroke="#008080" strokeWidth={2} />
+          <Line type="monotone" dataKey="expenditure" stroke="#ff6644" strokeWidth={2} />
+          <Line type="monotone" dataKey="savings" stroke="#006400" strokeWidth={2} />
+        </LineChart>
+        {/*** 平均値プロット ***/}
+        <LineChart width={1000} height={500} data={this.state.average_data}>
           <Tooltip/>
           <XAxis dataKey="age" />
           <YAxis />

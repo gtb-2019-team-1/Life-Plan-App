@@ -94,7 +94,7 @@ export default class App extends React.Component {
     for(let i=copied_got_data.length; i<copied_data.length; i++){
       copied_data[i].income = parseInt(copied_average_data[i].income * ratio_of_income);
       copied_data[i].expenditure = parseInt(copied_average_data[i].expenditure * ratio_of_expenditure);
-      copied_data[i].savings = copied_average_data[i].savings + copied_average_data[i].income - copied_average_data[i].expenditure;
+      copied_data[i].savings = parseInt(copied_data[i-1].savings + copied_average_data[i].income * ratio_of_income - copied_average_data[i].expenditure * ratio_of_expenditure);
     }
     
     this.setState((state) => {

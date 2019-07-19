@@ -65,8 +65,8 @@ export default class App extends React.Component {
     let copied_expenditure_price = this.state.expenditure_price;
     for(let i=0; i<copied_data.length; i++){
       if(copied_data[i].age === parseInt(copied_expenditure_age)){
-        copied_data[i].expenditure = copied_expenditure_price;
-        copied_data[i].savings = copied_data[i].savings - copied_expenditure_price;
+        copied_data[i].expenditure = copied_data[i].expenditure + parseInt(copied_expenditure_price);
+        copied_data[i].savings = copied_data[i].savings - parseInt(copied_expenditure_price);
       }
     }
 

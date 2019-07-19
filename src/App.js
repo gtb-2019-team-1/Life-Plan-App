@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import {LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip} from 'recharts';
 import axios from 'axios';
+import { exportDefaultSpecifier } from '@babel/types';
 
 const LIFE_PLAN_APPS_ENDPOINT = "http://localhost:5000/data";
 const INTERVAL_OF_AVERAGE = 5;
@@ -29,9 +30,9 @@ export default class App extends React.Component {
     }
     // console.log(init_average_data)
     this.state = {
-      starting_age:'',
-      expenditure_age:'',
-      expenditure_price:'',
+      starting_age:0,
+      expenditure_age:0,
+      expenditure_price:0,
       data: init_data,
       average_data:init_average_data,
       got_data:[
@@ -44,6 +45,7 @@ export default class App extends React.Component {
     this.getData = this.getData.bind(this);
     this.handleGetByAPI = this.hrandleGetByAPI.bind(this);
     this.BigExpenditureEvent = this.BigExpenditureEvent.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
   
   componentDidMount(){}
@@ -55,7 +57,25 @@ export default class App extends React.Component {
   }
   BigExpenditureEvent(event){
     this.setState({[event.target.name]: event.target.value});
-    
+  }
+
+  handleSubmit(event){
+    let copied_data = this.state.data.slice();
+    let copied_expenditure_age = this.state.expenditure_age;
+    let copied_expenditure_price = this.state.expenditure_price;
+    for(let i=0; i<copied_data.length; i++){
+      if(copied_data[i].age === parseInt(copied_expenditure_age)){
+        copied_data[i].expenditure = copied_expenditure_price;
+        copied_data[i].savings = copied_data[i].savings - copied_expenditure_price;
+      }
+    }
+
+    this.setState((state) => {
+      return {
+        data : copied_data
+      }
+    });
+    event.preventDefault();
   }
 
   hrandleGetByAPI(){
@@ -129,7 +149,10 @@ export default class App extends React.Component {
             いつ:
             <input name="expenditure_age" value={this.state.expenditure_age} type="text" onChange={this.BigExpenditureEvent} />
           </label>
-          <br />金額:<input name="expenditure_price" value={this.state.expenditure_price} type="text" onChange={this.BigExpenditureEvent} /><br />
+          <br />金額:<input name="expenditure_price" value={this.state.expenditure_price} type="text" onChange={this.BigExpenditureEvent} />
+          <button onClick={this.handleSubmit}>
+            send
+          </button><br />
         </form>
         <a onClick={this.getData} data={this.state.data} got_data={this.state.got_data} average_data={this.state.average_data}>げっとぐらふでーた</a>
         <br />

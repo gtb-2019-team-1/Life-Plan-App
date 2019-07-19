@@ -23,6 +23,35 @@
   color: #61dafb;
 }
 
+.asset_money{
+  color: darkgray;
+}
+.reactarea{
+  position: absolute;
+  float:right;
+  top: 60px;
+  right: 100px;
+}
+.list{
+  position: relative;
+  width: 300px;
+  background-color:darkgrey;  
+  padding: 10px;
+  margin-left: 100px;
+  top: 30px;
+}
+.list2{
+  width: 250px;
+  height: 50px;
+  text-align: center;
+  font-size: 30px;
+  background-color:white;
+  margin: 10px auto;
+}
+.form{
+  width: 300px;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

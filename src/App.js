@@ -12,12 +12,12 @@ export default class App extends React.Component {
     super(props);
 
     //１９歳以下  ２０～２４  ２５～２９  ３０～３４  ３５～３９  ４０～４４  ４５～４９  ５０～５４  ５５～５９  ６０～６４  ６５～６９  ７０歳以上
-    let average_income = [132,262,361,407,442,468,496,519,516,396,314,288,432,432,432,432,432]; // interval is 5
-    let average_expenditure = [186,186,186,183,183,183,183,183,215,215,215,215,215,215,215,215,215]; // ~34, 35~59, 60~
+    let average_income = [132,262,361,407,442,468,496,519,516,396,314,288/*432,432,432,432,432*/]; // interval is 5
+    let average_expenditure = [186,186,186,183,183,183,183,183,215,215,215,215/*,215,215,215,215,215*/]; // ~34, 35~59, 60~
     let init_data = [];
     let init_average_data = [];
     let average_savings = 0;
-    for(let age = 20; age <= 100; age=age+INTERVAL_OF_AVERAGE){
+    for(let age = 20; age <= 75; age=age+INTERVAL_OF_AVERAGE){
       init_data.push({age:(age), income:0, expenditure:0, savings:0});
       average_savings = average_savings + average_income[(age-20)/INTERVAL_OF_AVERAGE]-average_expenditure[(age-20)/INTERVAL_OF_AVERAGE];
       init_average_data.push({
@@ -30,6 +30,8 @@ export default class App extends React.Component {
     // console.log(init_average_data)
     this.state = {
       starting_age:'',
+      expenditure_age:'',
+      expenditure_price:'',
       data: init_data,
       average_data:init_average_data,
       got_data:[
@@ -41,6 +43,7 @@ export default class App extends React.Component {
     this.handleUpdateStartingAge = this.handleUpdateStartingAge.bind(this);
     this.getData = this.getData.bind(this);
     this.handleGetByAPI = this.hrandleGetByAPI.bind(this);
+    this.BigExpenditureEvent = this.BigExpenditureEvent.bind(this);
   }
   
   componentDidMount(){}
@@ -49,6 +52,10 @@ export default class App extends React.Component {
 
   handleUpdateStartingAge(event){
     this.setState({starting_age: event.target.value});
+  }
+  BigExpenditureEvent(event){
+    this.setState({[event.target.name]: event.target.value});
+    
   }
 
   hrandleGetByAPI(){
@@ -114,6 +121,15 @@ export default class App extends React.Component {
             <input name="starting_age" value={this.state.starting_age} type="text" onChange={this.handleUpdateStartingAge} />
           </label>
           <br />this.state.starting_age: {this.state.starting_age}<br />
+        </form>
+        {this.state.expenditure_age}
+        {this.state.expenditure_price}
+        <form>
+          <label>
+            いつ:
+            <input name="expenditure_age" value={this.state.expenditure_age} type="text" onChange={this.BigExpenditureEvent} />
+          </label>
+          <br />金額:<input name="expenditure_price" value={this.state.expenditure_price} type="text" onChange={this.BigExpenditureEvent} /><br />
         </form>
         <a onClick={this.getData} data={this.state.data} got_data={this.state.got_data} average_data={this.state.average_data}>げっとぐらふでーた</a>
         <br />

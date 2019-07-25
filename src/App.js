@@ -3,6 +3,7 @@ import './App.css';
 import {LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip} from 'recharts';
 import axios from 'axios';
 import { exportDefaultSpecifier } from '@babel/types';
+import FormInputs from './FormInputs';
 
 const LIFE_PLAN_APPS_ENDPOINT = "http://118.27.1.4:8080/json1";
 const INTERVAL_OF_AVERAGE = 5;
@@ -31,18 +32,17 @@ export default class App extends React.Component {
       })
     }
     this.state = {
-      starting_age:0,
       expenditure_age:0,
       expenditure_price:0,
       data: init_data,
       average_data:init_average_data,
+      form_data:[],
       got_data:[
         {age: 20, income: 200, expenditure:100, savings:0},
         {age: 25, income: 200, expenditure:150, savings:50},
         {age: 30, income: 300, expenditure:200, savings:150}
       ]
     };
-    this.handleUpdateStartingAge = this.handleUpdateStartingAge.bind(this);
     this.getData = this.getData.bind(this);
     this.handleGetByAPI = this.handleGetByAPI.bind(this);
     this.BigExpenditureEvent = this.BigExpenditureEvent.bind(this);
@@ -53,9 +53,6 @@ export default class App extends React.Component {
   
   componentWillUnmount(){}
 
-  handleUpdateStartingAge(event){
-    this.setState({starting_age: event.target.value});
-  }
   BigExpenditureEvent(event){
     this.setState({[event.target.name]: event.target.value});
   }
@@ -149,29 +146,35 @@ export default class App extends React.Component {
     });
     event.preventDefault();
   }
+
+  handleChange = (e) => {
+    if (["name", "price", "deposit"].includes(e.target.className) ) {
+      let form_data = [...this.state.form_data]
+      form_data[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
+      this.setState({ form_data }, () => console.log(this.state.form_data))
+    } else {
+      this.setState({ [e.target.name]: e.target.value.toUpperCase() })
+    }
+  }
+
+  addForm = (e) => {
+    this.setState((prevState) => ({
+      form_data: [...prevState.form_data, {name:"", price:"", deposit:""}],
+    }));
+  }
+
+  handleSubmit = (e) => { e.preventDefault() }
   
   render(){
+    let {form_data} = this.state
     return (
       <div>
-        <form>
-          <label>
-            starting_age:
-            <input name="starting_age" value={this.state.starting_age} type="text" onChange={this.handleUpdateStartingAge} />
-          </label>
-          <br />this.state.starting_age: {this.state.starting_age}<br />
+        <form onSubmit={this.handleSubmit} onChange={this.handleChange}>
+          <button onClick={this.addForm}>Add new form</button>
+          <FormInputs form_data={form_data} />
+          <input type="submit" value="Submit" /> 
         </form>
-        {this.state.expenditure_age}
-        {this.state.expenditure_price}
-        <form>
-          <label>
-            いつ:
-            <input name="expenditure_age" value={this.state.expenditure_age} type="text" onChange={this.BigExpenditureEvent} />
-          </label>
-          <br />金額:<input name="expenditure_price" value={this.state.expenditure_price} type="text" onChange={this.BigExpenditureEvent} />
-          <button onClick={this.handleSubmit}>
-            send
-          </button><br />
-        </form>
+
         <a onClick={this.getData} data={this.state.data} got_data={this.state.got_data} average_data={this.state.average_data}>げっとぐらふでーた</a>
         <br />
         <a onClick={this.handleGetByAPI} data={this.state.weather}>さーばーさんでーたをください</a>

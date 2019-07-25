@@ -2,88 +2,44 @@ import React from 'react';
 import './App.css';
 import {LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip} from 'recharts';
 import axios from 'axios';
-import { exportDefaultSpecifier } from '@babel/types';
 import FormInputs from './FormInputs';
-
+              
 const LIFE_PLAN_APPS_ENDPOINT = "http://118.27.1.4:8080/json1";
 const INTERVAL_OF_AVERAGE = 5;
 const config = {
   headers: {'Access-Control-Allow-Origin':'*'}
 }
-
+              
 export default class App extends React.Component {
   constructor(props){
     super(props);
 
-    //１９歳以下  ２０～２４  ２５～２９  ３０～３４  ３５～３９  ４０～４４  ４５～４９  ５０～５４  ５５～５９  ６０～６４  ６５～６９  ７０歳以上
-    let average_income = [132,262,361,407,442,468,496,519,516,396,314,288/*432,432,432,432,432*/]; // interval is 5
-    let average_expenditure = [186,186,186,183,183,183,183,183,215,215,215,215/*,215,215,215,215,215*/]; // ~34, 35~59, 60~
     let init_data = [];
-    let init_average_data = [];
-    let average_savings = 0;
     for(let age = 20; age <= 65; age=age+INTERVAL_OF_AVERAGE){
       init_data.push({age:(age), income:0, expenditure:0, savings:0});
-      average_savings = average_savings + average_income[(age-20)/INTERVAL_OF_AVERAGE]-average_expenditure[(age-20)/INTERVAL_OF_AVERAGE];
-      init_average_data.push({
-        age:(age),
-        income:average_income[(age-20)/INTERVAL_OF_AVERAGE],
-        expenditure:average_expenditure[(age-20)/INTERVAL_OF_AVERAGE],
-        savings:average_savings
-      })
     }
     this.state = {
-      expenditure_age:0,
-      expenditure_price:0,
       data: init_data,
-      average_data:init_average_data,
       form_data:[],
-      got_data:[
-        {age: 20, income: 200, expenditure:100, savings:0},
-        {age: 25, income: 200, expenditure:150, savings:50},
-        {age: 30, income: 300, expenditure:200, savings:150}
-      ]
+      form_data_keys:[]
     };
-    this.getData = this.getData.bind(this);
     this.handleGetByAPI = this.handleGetByAPI.bind(this);
-    this.BigExpenditureEvent = this.BigExpenditureEvent.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.addForm = this.addForm.bind(this);
   }
   
   componentDidMount(){}
   
   componentWillUnmount(){}
 
-  BigExpenditureEvent(event){
-    this.setState({[event.target.name]: event.target.value});
-  }
-
-  handleSubmit(event){
-    let copied_data = this.state.data.slice();
-    let copied_expenditure_age = this.state.expenditure_age;
-    let copied_expenditure_price = this.state.expenditure_price;
-    for(let i=0; i<copied_data.length; i++){
-      if(copied_data[i].age === parseInt(copied_expenditure_age)){
-        copied_data[i].expenditure = copied_data[i].expenditure + parseInt(copied_expenditure_price);
-        copied_data[i].savings = copied_data[i].savings - parseInt(copied_expenditure_price);
-      }else if(copied_data[i].age > parseInt(copied_expenditure_age)){
-        copied_data[i].savings = copied_data[i].savings - parseInt(copied_expenditure_price);
-      }
-    }
-
-    this.setState((state) => {
-      return {
-        data : copied_data
-      }
-    });
-    event.preventDefault();
-  }
   handleGetByAPI(event){
     var self = this;
     axios
       .get(LIFE_PLAN_APPS_ENDPOINT)
       .then(response => {
         console.log('API通信成功')
-        //console.log(response)
+        console.log(response)
         let copied_data = this.state.data.slice();
         let render_data = [];
         for(let i=0; i<10; i++){
@@ -99,91 +55,69 @@ export default class App extends React.Component {
           }
         });
       })
-      
+
       .catch(() => {
         console.log('APIとの通信失敗');
       });
       event.preventDefault();
   }
 
-  
-
-  getData(event){
-    let copied_data = this.state.data.slice();
-    let copied_got_data = this.state.got_data.slice();
-    let copied_average_data = this.state.average_data.slice();
-    let ratio_of_income = 1;
-    let ratio_of_expenditure = 1;
-
-    for(let i=0; i<copied_data.length; i++){
-      for(let j=0; j<copied_got_data.length; j++){
-        if(copied_data[i].age === copied_got_data[j].age){
-          copied_data[i] = copied_got_data[j];
-          // 収支について平均との比を求める
-          if(j==0){
-            ratio_of_income = copied_average_data[i].income / copied_got_data[j].income;
-            ratio_of_expenditure = copied_average_data[i].expenditure / copied_got_data[j].expenditure;
-          }else{
-            ratio_of_income = (ratio_of_income + copied_average_data[i].income / copied_got_data[j].income) / j;
-            ratio_of_expenditure = (ratio_of_expenditure + copied_average_data[i].expenditure / copied_got_data[j].expenditure) / j;
-          }
-          console.log("ratio_of_income is ", ratio_of_income)
-          console.log("ratio_of_expenditure is ", ratio_of_expenditure)
-        }
-      }
-    }
-
-    for(let i=copied_got_data.length; i<copied_data.length; i++){
-      copied_data[i].income = parseInt(copied_average_data[i].income * ratio_of_income);
-      copied_data[i].expenditure = parseInt(copied_average_data[i].expenditure * ratio_of_expenditure);
-      copied_data[i].savings = parseInt(copied_data[i-1].savings + copied_average_data[i].income * ratio_of_income - copied_average_data[i].expenditure * ratio_of_expenditure);
-    }
-    
-    this.setState((state) => {
-      return {
-        data: copied_data
-      }
-    });
-    event.preventDefault();
-  }
-
   handleChange = (e) => {
     if (["name", "price", "deposit"].includes(e.target.className) ) {
       let form_data = [...this.state.form_data]
       form_data[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
-      this.setState({ form_data }, () => console.log(this.state.form_data))
+      this.setState({ form_data })
     } else {
       this.setState({ [e.target.name]: e.target.value.toUpperCase() })
     }
   }
 
   addForm = (e) => {
+    // console.log(this.state.form_data)
     this.setState((prevState) => ({
       form_data: [...prevState.form_data, {name:"", price:"", deposit:""}],
     }));
   }
 
-  handleSubmit = (e) => { e.preventDefault() }
+  handleSubmit = (event) => {
+    let copied_form_data = this.state.form_data.slice();
+    let copied_data = this.state.data.slice();
+    let form_data_keys = [];
+
+    for(let i=0; i<copied_form_data.length; i++){
+      for(let j=0; j<parseInt(copied_form_data[i].price/copied_form_data[i].deposit); j++){
+        copied_data[j][copied_form_data[i].name] = copied_form_data[i].deposit;
+      }
+    }
+    for(let i=0; i<copied_form_data.length; i++){
+      form_data_keys.push(copied_form_data[i].name);
+    }
+    console.log(form_data_keys)
+    this.setState((state) => {
+      return{
+        data:copied_data,
+        form_data_keys:form_data_keys
+      }
+    });
+    event.preventDefault()
+  }
   
+// {[...Array(100)].map((item, index) => <span>ID:{index}</span>)}
   render(){
-    let {form_data} = this.state
     return (
       <div>
-        <form onSubmit={this.handleSubmit} onChange={this.handleChange}>
-          <button onClick={this.addForm}>Add new form</button>
-          <FormInputs form_data={form_data} />
-          <input type="submit" value="Submit" /> 
+        <div className="form">
+        <form onSubmit={this.handleSubmit} onChange={this.handleChange} data={this.state.data} form_data={this.state.form_data}>
+          <FormInputs form_data={this.state.form_data} />
+          <p className="btn_wrapper">
+            <input className="btn addform" type="button" onClick={this.addForm} value="フォームを追加"/>
+            <input className="btn submit" type="submit" value="Submit" />
+          </p>
         </form>
+        </div>
 
-        <a onClick={this.getData} data={this.state.data} got_data={this.state.got_data} average_data={this.state.average_data}>げっとぐらふでーた</a>
-        <br />
-        <a onClick={this.handleGetByAPI} data={this.state.weather}>さーばーさんでーたをください</a>
-        <br />
-        <a onClick={this.handleGetByAPI} data={this.state.data}>api通信</a>
-        <br />
-        {/*** 入力値を取得した限り, 未入力の部分は入力値と平均との比をとってプロット ***/}
-
-        <LineChart width={1000} height={500} data={this.state.data}>
+        <div className="chart">
+        <LineChart width={1000} height={500} data={this.state.data} form_data_keys={this.state.form_data_keys}>
           <Tooltip/>
           <XAxis dataKey="age" />
           <YAxis />
@@ -191,17 +125,15 @@ export default class App extends React.Component {
           <Line type="monotone" dataKey="income" stroke="#008080" strokeWidth={2} />
           <Line type="monotone" dataKey="expenditure" stroke="#ff6644" strokeWidth={2} />
           <Line type="monotone" dataKey="savings" stroke="#006400" strokeWidth={2} />
+          {[...this.state.form_data_keys].map((item, index) => <Line type="monotone" key={index} dataKey={item} stroke="#006400" strokeWidth={2} />)}
         </LineChart>
-        {/*** 平均値プロット ***/}
-        <LineChart width={1000} height={500} data={this.state.average_data}>
-          <Tooltip/>
-          <XAxis dataKey="age" />
-          <YAxis />
-          <CartesianGrid stroke="#eee" strokeDasharray="5 5"/>
-          <Line type="monotone" dataKey="income" stroke="#008080" strokeWidth={2} />
-          <Line type="monotone" dataKey="expenditure" stroke="#ff6644" strokeWidth={2} />
-          <Line type="monotone" dataKey="savings" stroke="#006400" strokeWidth={2} />
-        </LineChart>
+          <a onClick={this.handleGetByAPI} data={this.state.data}>さーばーさんでーたをください</a>
+        </div>
+        <img src="tekkuma.png"></img>
+        <div className="get">
+          <a onClick={this.handleGetByAPI} data={this.state.data}>さーばーさんでーたをください</a>
+          <br />
+        </div>
       </div>
     );
   }

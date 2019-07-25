@@ -4,9 +4,11 @@ import {LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Toolt
 import axios from 'axios';
 import { exportDefaultSpecifier } from '@babel/types';
 
-const LIFE_PLAN_APPS_ENDPOINT = "http://localhost:5000/data";
+const LIFE_PLAN_APPS_ENDPOINT = "http://118.27.1.4:8080/json1";
 const INTERVAL_OF_AVERAGE = 5;
-
+const config = {
+  headers: {'Access-Control-Allow-Origin':'*'}
+}
 
 export default class App extends React.Component {
   constructor(props){
@@ -18,7 +20,7 @@ export default class App extends React.Component {
     let init_data = [];
     let init_average_data = [];
     let average_savings = 0;
-    for(let age = 20; age <= 75; age=age+INTERVAL_OF_AVERAGE){
+    for(let age = 20; age <= 65; age=age+INTERVAL_OF_AVERAGE){
       init_data.push({age:(age), income:0, expenditure:0, savings:0});
       average_savings = average_savings + average_income[(age-20)/INTERVAL_OF_AVERAGE]-average_expenditure[(age-20)/INTERVAL_OF_AVERAGE];
       init_average_data.push({
@@ -28,7 +30,6 @@ export default class App extends React.Component {
         savings:average_savings
       })
     }
-    // console.log(init_average_data)
     this.state = {
       starting_age:0,
       expenditure_age:0,
@@ -43,7 +44,7 @@ export default class App extends React.Component {
     };
     this.handleUpdateStartingAge = this.handleUpdateStartingAge.bind(this);
     this.getData = this.getData.bind(this);
-    this.handleGetByAPI = this.hrandleGetByAPI.bind(this);
+    this.handleGetByAPI = this.handleGetByAPI.bind(this);
     this.BigExpenditureEvent = this.BigExpenditureEvent.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -67,6 +68,8 @@ export default class App extends React.Component {
       if(copied_data[i].age === parseInt(copied_expenditure_age)){
         copied_data[i].expenditure = copied_data[i].expenditure + parseInt(copied_expenditure_price);
         copied_data[i].savings = copied_data[i].savings - parseInt(copied_expenditure_price);
+      }else if(copied_data[i].age > parseInt(copied_expenditure_age)){
+        copied_data[i].savings = copied_data[i].savings - parseInt(copied_expenditure_price);
       }
     }
 
@@ -77,22 +80,37 @@ export default class App extends React.Component {
     });
     event.preventDefault();
   }
-
-  hrandleGetByAPI(){
+  handleGetByAPI(event){
+    var self = this;
     axios
       .get(LIFE_PLAN_APPS_ENDPOINT)
       .then(response => {
-        console.log(response.data)
+        console.log('API通信成功')
+        //console.log(response)
+        let copied_data = this.state.data.slice();
+        let render_data = [];
+        for(let i=0; i<10; i++){
+          copied_data[i].income = response.data.data.cash_data[i].annual_income;
+          copied_data[i].expenditure = response.data.data.cash_data[i].annual_expenditure;
+          copied_data[i].savings = response.data.data.cash_data[i].savings;
+        }
+        console.log(render_data);
+
         this.setState((state) => {
-          return{
-            weather:response.data[0].weather
+          return {
+            data : copied_data
           }
         });
       })
+      
       .catch(() => {
         console.log('APIとの通信失敗');
       });
+      event.preventDefault();
   }
+
+  
+
   getData(event){
     let copied_data = this.state.data.slice();
     let copied_got_data = this.state.got_data.slice();
@@ -158,7 +176,10 @@ export default class App extends React.Component {
         <br />
         <a onClick={this.handleGetByAPI} data={this.state.weather}>さーばーさんでーたをください</a>
         <br />
+        <a onClick={this.handleGetByAPI} data={this.state.data}>api通信</a>
+        <br />
         {/*** 入力値を取得した限り, 未入力の部分は入力値と平均との比をとってプロット ***/}
+
         <LineChart width={1000} height={500} data={this.state.data}>
           <Tooltip/>
           <XAxis dataKey="age" />

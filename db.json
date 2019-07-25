@@ -1,121 +1,121 @@
 {
     "data": {
-        "savings": 300000,
+        "savings": 30,
         "rating": 2,
         "cash_data": [
             {
                 "id": 1,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 3,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 4,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 5,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 6,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 7,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 8,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 9,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 10,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 11,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 12,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 13,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 14,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 15,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 16,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 17,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 18,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 19,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             },
             {
                 "id": 20,
                 "year": 2019,
-                "annual_income": 2400000,
-                "annual_expenditure": 2000000
+                "annual_income": 240,
+                "annual_expenditure": 200
             }
         ]
     }

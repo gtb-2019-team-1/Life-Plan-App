@@ -4,8 +4,10 @@ import {LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Toolt
 import axios from 'axios';
 import FormInputs from './FormInputs';
               
-const LIFE_PLAN_APPS_ENDPOINT = "http://118.27.1.4:8080/json1";
+const LIFE_PLAN_APPS_ENDPOINT = "http://118.27.1.4:8080/json";
 const INTERVAL_OF_AVERAGE = 5;
+let accountNumber;
+let password; 
 const config = {
   headers: {'Access-Control-Allow-Origin':'*'}
 }
@@ -21,12 +23,16 @@ export default class App extends React.Component {
     this.state = {
       data: init_data,
       form_data:[],
-      form_data_keys:[]
+      form_data_keys:[],
+      id:'',
+      password:''
     };
     this.handleGetByAPI = this.handleGetByAPI.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.addForm = this.addForm.bind(this);
+    this.idChange = this.idChange.bind(this);
+    this.passwordChange = this.passwordChange.bind(this);
   }
   
   componentDidMount(){}
@@ -36,7 +42,13 @@ export default class App extends React.Component {
   handleGetByAPI(event){
     var self = this;
     axios
-      .get(LIFE_PLAN_APPS_ENDPOINT)
+      .get(LIFE_PLAN_APPS_ENDPOINT, {
+        params: {
+          // ここにクエリパラメータを指定する
+          accountNumber:this.state.id,
+          password:this.state.password
+        }
+      })
       .then(response => {
         console.log('API通信成功')
         console.log(response)
@@ -101,7 +113,14 @@ export default class App extends React.Component {
     });
     event.preventDefault()
   }
-  
+
+  idChange(event) {
+    this.setState({id: event.target.value});
+  }
+
+  passwordChange(event) {
+    this.setState({password: event.target.value});
+  }  
 // {[...Array(100)].map((item, index) => <span>ID:{index}</span>)}
   render(){
     return (
@@ -128,7 +147,9 @@ export default class App extends React.Component {
           <Line type="monotone" dataKey="border" stroke="#000000" strokeWidth={2} />
           {[...this.state.form_data_keys].map((item, index) => <Line type="monotone" key={index} dataKey={item} stroke="#006400" strokeWidth={2} />)}
         </LineChart>
-          <a onClick={this.handleGetByAPI} data={this.state.data}>さーばーさんでーたをください</a>
+      　口座番号<input type="text" value={this.state.id} onChange={this.idChange} />
+        パスワード<input type="text" value={this.state.password} onChange={this.passwordChange} />
+        <input onClick={this.handleGetByAPI} type="button" data={this.state.data} value="あなたの未来"/>
         </div>
         <img src="tekkuma.png"></img>
         <div className="get">

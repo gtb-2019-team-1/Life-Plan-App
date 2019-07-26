@@ -3,12 +3,15 @@ import './App.css';
 import {LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip} from 'recharts';
 import axios from 'axios';
 import FormInputs from './FormInputs';
+
               
 const LIFE_PLAN_APPS_ENDPOINT = "http://118.27.0.198:8080/json"
 const INTERVAL_OF_AVERAGE = 5;
+const deathLine = 2000;
 const config = {
   headers: {'Access-Control-Allow-Origin':'*'}
 }
+let conohaText;
               
 export default class App extends React.Component {
   constructor(props){
@@ -57,12 +60,18 @@ export default class App extends React.Component {
           copied_data[i].savings = response.data.data.cash_data[i].savings;
         }
         console.log(render_data);
+        if(copied_data[9].savings < deathLine){
+          conohaText = "このままじゃ将来不安なの。";
+        }else{
+          conohaText = "まだまだ私に貢げそうね♡";
+        }  
 
         this.setState((state) => {
           return {
             data : copied_data
           }
         });
+  
       })
 
       .catch(() => {
@@ -82,7 +91,6 @@ export default class App extends React.Component {
   }
 
   addForm = (e) => {
-    // console.log(this.state.form_data)
     this.setState((prevState) => ({
       form_data: [...prevState.form_data, {name:"", price:"", deposit:""}],
     }));
@@ -94,10 +102,6 @@ export default class App extends React.Component {
     let form_data_keys = [];
     let deposit = 0;
     let deposit_sum = 0;
-
-    //console.log(Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit))
-    //console.log(Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit/INTERVAL_OF_AVERAGE)*INTERVAL_OF_AVERAGE)
-    //console.log(copied_form_data[0].price / (Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit/INTERVAL_OF_AVERAGE)*INTERVAL_OF_AVERAGE))
     deposit = (copied_form_data[0].price / (Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit/INTERVAL_OF_AVERAGE)*INTERVAL_OF_AVERAGE))*INTERVAL_OF_AVERAGE;
     for(let i=0; i<copied_form_data.length; i++){
       for(let j=0; j<Math.ceil(copied_form_data[i].price/copied_form_data[i].deposit)/INTERVAL_OF_AVERAGE; j++){
@@ -113,6 +117,12 @@ export default class App extends React.Component {
     for(let i=0; i<copied_form_data.length; i++){
       form_data_keys.push(copied_form_data[i].name);
     }
+    if(copied_data[9].savings < deathLine){
+      conohaText = "このままじゃ将来不安なの。";
+    }else{
+      conohaText = "まだまだ私に貢げそうね♡";
+    }  
+
     this.setState((state) => {
       return{
         data:copied_data,
@@ -129,7 +139,6 @@ export default class App extends React.Component {
   passwordChange(event) {
     this.setState({password: event.target.value});
   } 
-// {[...Array(100)].map((item, index) => <span>ID:{index}</span>)}
   render(){
     return (
       <div>
@@ -143,7 +152,6 @@ export default class App extends React.Component {
         </form>
         </div>
         <div className="chart">
-          {/* <p className="label">200万円</p> */}
           <br /><br />
           <LineChart width={750} height={500} data={this.state.data} form_data_keys={this.state.form_data_keys}>
           <Tooltip/>
@@ -162,6 +170,7 @@ export default class App extends React.Component {
             パスワード<input className="login_form" type="text" value={this.state.password} onChange={this.passwordChange} />
             <input  className="btn go" onClick={this.handleGetByAPI} type="button" data={this.state.data} value="あなたの未来"/>
           </div>
+          <div　className="conohaText" >{conohaText}</div>
       </div>
     );
   }

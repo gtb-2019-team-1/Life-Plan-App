@@ -89,9 +89,17 @@ form div{
 }
 .conoha{
   position: absolute;
-  top: 450px;
-  left: 1100px;
-  width: 150px;
+  top: 400px;
+  left: 1050px;
+  width: 200px;
+}
+.conohaText{
+  font-size : 20px;
+  position: absolute;
+  top: 350px;
+  left: 1020px;
+  width: 250px;
+  font-display: bold;
 }
 
 .login{

@@ -16,7 +16,7 @@ export default class App extends React.Component {
 
     let init_data = [];
     for(let age = 20; age <= 65; age=age+INTERVAL_OF_AVERAGE){
-      init_data.push({age:(age), income:0, expenditure:0, savings:0});
+      init_data.push({age:(age), income:0, expenditure:0, savings:0, border:2000});
     }
     this.state = {
       data: init_data,
@@ -125,6 +125,7 @@ export default class App extends React.Component {
           <Line type="monotone" dataKey="income" stroke="#008080" strokeWidth={2} />
           <Line type="monotone" dataKey="expenditure" stroke="#ff6644" strokeWidth={2} />
           <Line type="monotone" dataKey="savings" stroke="#006400" strokeWidth={2} />
+          <Line type="monotone" dataKey="border" stroke="#000000" strokeWidth={2} />
           {[...this.state.form_data_keys].map((item, index) => <Line type="monotone" key={index} dataKey={item} stroke="#006400" strokeWidth={2} />)}
         </LineChart>
           <a onClick={this.handleGetByAPI} data={this.state.data}>さーばーさんでーたをください</a>

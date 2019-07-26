@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  max-width: 1300px;
 }
 
 code {
@@ -14,18 +15,19 @@ code {
 
 header{
   background-color: white;
-  height: 50px;
   width: 100%;
+  margin: 0px;
+  padding: 0px;
 }
 .gmo_logo{
   height: 20px;
   float: left;
-  margin: 15px 5px 15px 20px;
+  margin: 15px 5px 0px 20px;
 }
 h2{
   font-weight: normal;
   font-size: 20px;
   color: black;
-  padding: 10px 0px 0px 0px ;
+  padding: 10px 0px 10px 0px ;
   border-bottom: 0.1px solid #000000;
 }

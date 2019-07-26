@@ -142,28 +142,26 @@ export default class App extends React.Component {
           </p>
         </form>
         </div>
-
         <div className="chart">
-        <LineChart width={1000} height={500} data={this.state.data} form_data_keys={this.state.form_data_keys}>
+          {/* <p className="label">200万円</p> */}
+          <br /><br />
+          <LineChart width={750} height={500} data={this.state.data} form_data_keys={this.state.form_data_keys}>
           <Tooltip/>
           <XAxis dataKey="age" />
           <YAxis />
-          <CartesianGrid stroke="#eee" strokeDasharray="5 5"/>
+          <CartesianGrid troke="#eee" strokeDasharray="5 5"/>
           <Line type="monotone" dataKey="income" stroke="#008080" strokeWidth={2} />
-          <Line type="monotone" dataKey="expenditure" stroke="#ff6644" strokeWidth={2} />
-          <Line type="monotone" dataKey="savings" stroke="#006400" strokeWidth={2} />
+          <Line type="monotone" dataKey="expenditure" stroke="#ff6644" strokeWidth={2} />            <Line type="monotone" dataKey="savings" stroke="#006400" strokeWidth={2} />
           <Line type="monotone" dataKey="border" stroke="#000000" strokeWidth={2} />
-        {/*{[...this.state.form_data_keys].map((item, index) => <Line type="monotone" key={index} dataKey={item} stroke="#006400" strokeWidth={2} />)}*/}
-        </LineChart>
-        口座番号<input type="text" value={this.state.id} onChange={this.idChange} />
-        パスワード<input type="text" value={this.state.password} onChange={this.passwordChange} />
-        <input onClick={this.handleGetByAPI} type="button" data={this.state.data} value="あなたの未来"/>
+          {/*[...this.state.form_data_keys].map((item, index) => <Line type="monotone" key={index} dataKey={item} stroke="#006400" strokeWidth={2} />)*/}
+          </LineChart>
         </div>
-        <img src="tekkuma.png"></img>
-        <div className="get">
-          <a onClick={this.handleGetByAPI} data={this.state.data}>さーばーさんでーたをください</a>
-          <br />
-        </div>
+        <img className="conoha" src="https://pbs.twimg.com/profile_images/1097324741814149120/uCW6StGr.png" />
+        <div className="login">
+        　  口座番号<input className="login_form" type="text" value={this.state.id} onChange={this.idChange} />
+            パスワード<input className="login_form" type="text" value={this.state.password} onChange={this.passwordChange} />
+            <input  className="btn go" onClick={this.handleGetByAPI} type="button" data={this.state.data} value="あなたの未来"/>
+          </div>
       </div>
     );
   }

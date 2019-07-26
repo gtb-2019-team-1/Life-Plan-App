@@ -66,7 +66,9 @@ form div{
   text-align: center;
   display: inline-block;
   margin: 10px 25px 10px 25px;
-
+}
+.submit{
+  font-size: 10px;
 }
 .btn_wrapper{
   position: fixed;
@@ -81,15 +83,31 @@ form div{
   width: 100%;
   display: block;
 }
-
-.get{
-  display: none;
+.label{
+  font-size: 30px;
+  text-align: center;
+}
+.conoha{
+  position: absolute;
+  top: 450px;
+  left: 1100px;
+  width: 150px;
 }
 
-.tekkuma{
-  float: right;
-  display: none;
-
+.login{
+  position: absolute;
+  top:2px;
+  left: 520px;
+  display: block;  
+  padding-top: 5px;
+  /* line-height: 50px; */
 }
-
+.go{
+  width: 130px;
+  margin: -5px 25px 0px 25px;
+  font-size: 15px;
+}
+.login_form{
+  margin-right: 20px;
+}
 

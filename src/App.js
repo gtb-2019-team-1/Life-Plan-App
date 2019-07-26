@@ -1,56 +1,169 @@
 import React from 'react';
 import './App.css';
 import {LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip} from 'recharts';
-
-
+import axios from 'axios';
+import FormInputs from './FormInputs';
+              
+const LIFE_PLAN_APPS_ENDPOINT = "http://118.27.0.198:8080/json"
+const INTERVAL_OF_AVERAGE = 5;
+const config = {
+  headers: {'Access-Control-Allow-Origin':'*'}
+}
+              
 export default class App extends React.Component {
-  constructor(props) {
+  constructor(props){
     super(props);
+
+    let init_data = [];
+    for(let age = 20; age <= 65; age=age+INTERVAL_OF_AVERAGE){
+      init_data.push({age:(age), income:0, expenditure:0, savings:0, border:2000});
+    }
     this.state = {
-        money:'',
-        data: [{time: '2019-07-04', money: 400}, {time: '2019-07-05', money: 300}, {time: '2019-07-06', money: 100}, {time: '2019-07-07', money: 400}]
+      data: init_data,
+      form_data:[],
+      form_data_keys:[],
+      id:'',
+      password:''
     };
-    this.handleChange = this.handleChange.bind(this);
+    this.handleGetByAPI = this.handleGetByAPI.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.addForm = this.addForm.bind(this);
+    this.idChange = this.idChange.bind(this);
+    this.passwordChange = this.passwordChange.bind(this);
+  }
+  
+  componentDidMount(){}
+  
+  componentWillUnmount(){}
+
+  handleGetByAPI(event){
+    var self = this;
+    axios
+      .get(LIFE_PLAN_APPS_ENDPOINT, {
+        params: {
+          accountNumber:this.state.id,
+          password:this.state.password
+        }
+      })
+      .then(response => {
+        console.log('API通信成功')
+        console.log(response)
+        let copied_data = this.state.data.slice();
+        let render_data = [];
+        for(let i=0; i<10; i++){
+          copied_data[i].income = response.data.data.cash_data[i].annual_income;
+          copied_data[i].expenditure = response.data.data.cash_data[i].annual_expenditure;
+          copied_data[i].savings = response.data.data.cash_data[i].savings;
+        }
+        console.log(render_data);
+
+        this.setState((state) => {
+          return {
+            data : copied_data
+          }
+        });
+      })
+
+      .catch(() => {
+        console.log('APIとの通信失敗');
+      });
+      event.preventDefault();
   }
 
-  componentDidMount() {
+  handleChange = (e) => {
+    if (["name", "price", "deposit"].includes(e.target.className) ) {
+      let form_data = [...this.state.form_data]
+      form_data[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
+      this.setState({ form_data })
+    } else {
+      this.setState({ [e.target.name]: e.target.value.toUpperCase() })
+    }
   }
 
-  componentWillUnmount() {
+  addForm = (e) => {
+    // console.log(this.state.form_data)
+    this.setState((prevState) => ({
+      form_data: [...prevState.form_data, {name:"", price:"", deposit:""}],
+    }));
   }
 
-  handleChange(event) {
-    this.setState({money: event.target.value});
-  }
+  handleSubmit = (event) => {
+    let copied_form_data = this.state.form_data.slice();
+    let copied_data = this.state.data.slice();
+    let form_data_keys = [];
+    let deposit = 0;
+    let deposit_sum = 0;
 
-  handleSubmit(event) {
-    alert('A time was submitted: ' + this.state.money);
-    //this.state.data.push({time: 'new', money: this.state.money}); // array破壊している。以下の方法またはstate.dataをオブジェクトコピーとして更新
+    //console.log(Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit))
+    //console.log(Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit/INTERVAL_OF_AVERAGE)*INTERVAL_OF_AVERAGE)
+    //console.log(copied_form_data[0].price / (Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit/INTERVAL_OF_AVERAGE)*INTERVAL_OF_AVERAGE))
+    deposit = (copied_form_data[0].price / (Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit/INTERVAL_OF_AVERAGE)*INTERVAL_OF_AVERAGE))*INTERVAL_OF_AVERAGE;
+    for(let i=0; i<copied_form_data.length; i++){
+      for(let j=0; j<Math.ceil(copied_form_data[i].price/copied_form_data[i].deposit)/INTERVAL_OF_AVERAGE; j++){
+        deposit_sum = deposit_sum + deposit;
+        copied_data[j][copied_form_data[i].name] = deposit;
+        copied_data[j].savings = copied_data[j].savings - deposit_sum;
+      }
+    }
+    for(let j=Math.ceil(Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit)/INTERVAL_OF_AVERAGE); j<copied_data.length; j++){
+      copied_data[j].savings = copied_data[j].savings - deposit_sum;
+    }
+
+    for(let i=0; i<copied_form_data.length; i++){
+      form_data_keys.push(copied_form_data[i].name);
+    }
     this.setState((state) => {
-      return {data: state.data.concat({time: 'new', money: parseInt(state.money)})}
+      return{
+        data:copied_data,
+        form_data_keys:form_data_keys
+      }
     });
-    event.preventDefault();
+    event.preventDefault()
+  }
+  
+  idChange(event) {
+    this.setState({id: event.target.value});
   }
 
-  render() {
+  passwordChange(event) {
+    this.setState({password: event.target.value});
+  } 
+// {[...Array(100)].map((item, index) => <span>ID:{index}</span>)}
+  render(){
     return (
       <div>
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Money:
-            <input name="money" value={this.state.money} type="text" onChange={this.handleChange}/>
-          </label>
-          <input type="submit" value="Submit" />
+        <div className="form">
+        <form onSubmit={this.handleSubmit} onChange={this.handleChange} data={this.state.data} form_data={this.state.form_data}>
+          <FormInputs form_data={this.state.form_data} />
+          <p className="btn_wrapper">
+            <input className="btn addform" type="button" onClick={this.addForm} value="フォームを追加"/>
+            <input className="btn submit" type="submit" value="Submit" />
+          </p>
         </form>
-        {/* {console.log(this.state.data)} */}
-        <LineChart width={600} height={300} data={this.state.data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-          <Line type="monotone" dataKey="money" stroke="#8884d8" />
-          <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-          <XAxis dataKey="time" />
+        </div>
+
+        <div className="chart">
+        <LineChart width={1000} height={500} data={this.state.data} form_data_keys={this.state.form_data_keys}>
+          <Tooltip/>
+          <XAxis dataKey="age" />
           <YAxis />
-          <Tooltip />
+          <CartesianGrid stroke="#eee" strokeDasharray="5 5"/>
+          <Line type="monotone" dataKey="income" stroke="#008080" strokeWidth={2} />
+          <Line type="monotone" dataKey="expenditure" stroke="#ff6644" strokeWidth={2} />
+          <Line type="monotone" dataKey="savings" stroke="#006400" strokeWidth={2} />
+          <Line type="monotone" dataKey="border" stroke="#000000" strokeWidth={2} />
+        {/*{[...this.state.form_data_keys].map((item, index) => <Line type="monotone" key={index} dataKey={item} stroke="#006400" strokeWidth={2} />)}*/}
         </LineChart>
+        口座番号<input type="text" value={this.state.id} onChange={this.idChange} />
+        パスワード<input type="text" value={this.state.password} onChange={this.passwordChange} />
+        <input onClick={this.handleGetByAPI} type="button" data={this.state.data} value="あなたの未来"/>
+        </div>
+        <img src="tekkuma.png"></img>
+        <div className="get">
+          <a onClick={this.handleGetByAPI} data={this.state.data}>さーばーさんでーたをください</a>
+          <br />
+        </div>
       </div>
     );
   }

@@ -11,3 +11,21 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+header{
+  background-color: white;
+  height: 50px;
+  width: 100%;
+}
+.gmo_logo{
+  height: 20px;
+  float: left;
+  margin: 15px 5px 15px 20px;
+}
+h2{
+  font-weight: normal;
+  font-size: 20px;
+  color: black;
+  padding: 10px 0px 0px 0px ;
+  border-bottom: 0.1px solid #000000;
+}

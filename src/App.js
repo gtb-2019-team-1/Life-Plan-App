@@ -60,7 +60,9 @@ export default class App extends React.Component {
           copied_data[i].savings = response.data.data.cash_data[i].savings;
         }
         console.log(render_data);
-        if(copied_data[9].savings < deathLine){
+        if(copied_data[9].savings >4000){
+          conohaText = "もっと私に貢げるんじゃない？";
+        }else if(copied_data[9].savings < deathLine){
           conohaText = "このままじゃ将来不安なの。";
         }else{
           conohaText = "まだまだ私に貢げそうね♡";
@@ -75,6 +77,7 @@ export default class App extends React.Component {
       })
 
       .catch(() => {
+        alert("口座番号またはパスワードが違います。")
         console.log('APIとの通信失敗');
       });
       event.preventDefault();
@@ -117,7 +120,9 @@ export default class App extends React.Component {
     for(let i=0; i<copied_form_data.length; i++){
       form_data_keys.push(copied_form_data[i].name);
     }
-    if(copied_data[9].savings < deathLine){
+    if(copied_data[9].savings >4000){
+      conohaText = "もっと私に貢げるんじゃない？";
+    }else if(copied_data[9].savings < deathLine){
       conohaText = "このままじゃ将来不安なの。";
     }else{
       conohaText = "まだまだ私に貢げそうね♡";
@@ -167,7 +172,7 @@ export default class App extends React.Component {
         <img className="conoha" src="https://pbs.twimg.com/profile_images/1097324741814149120/uCW6StGr.png" />
         <div className="login">
         　  口座番号<input className="login_form" type="text" value={this.state.id} onChange={this.idChange} />
-            パスワード<input className="login_form" type="text" value={this.state.password} onChange={this.passwordChange} />
+            パスワード<input className="login_form" type="password" value={this.state.password} onChange={this.passwordChange} />
             <input  className="btn go" onClick={this.handleGetByAPI} type="button" data={this.state.data} value="あなたの未来"/>
           </div>
           <div　className="conohaText" >{conohaText}</div>

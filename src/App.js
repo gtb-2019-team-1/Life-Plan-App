@@ -4,10 +4,8 @@ import {LineChart, Line, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Toolt
 import axios from 'axios';
 import FormInputs from './FormInputs';
               
-const LIFE_PLAN_APPS_ENDPOINT = "http://118.27.1.4:8080/json";
+const LIFE_PLAN_APPS_ENDPOINT = "http://118.27.0.198:8080/json"
 const INTERVAL_OF_AVERAGE = 5;
-let accountNumber;
-let password; 
 const config = {
   headers: {'Access-Control-Allow-Origin':'*'}
 }
@@ -44,7 +42,6 @@ export default class App extends React.Component {
     axios
       .get(LIFE_PLAN_APPS_ENDPOINT, {
         params: {
-          // ここにクエリパラメータを指定する
           accountNumber:this.state.id,
           password:this.state.password
         }
@@ -95,16 +92,27 @@ export default class App extends React.Component {
     let copied_form_data = this.state.form_data.slice();
     let copied_data = this.state.data.slice();
     let form_data_keys = [];
+    let deposit = 0;
+    let deposit_sum = 0;
 
+    //console.log(Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit))
+    //console.log(Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit/INTERVAL_OF_AVERAGE)*INTERVAL_OF_AVERAGE)
+    //console.log(copied_form_data[0].price / (Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit/INTERVAL_OF_AVERAGE)*INTERVAL_OF_AVERAGE))
+    deposit = (copied_form_data[0].price / (Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit/INTERVAL_OF_AVERAGE)*INTERVAL_OF_AVERAGE))*INTERVAL_OF_AVERAGE;
     for(let i=0; i<copied_form_data.length; i++){
-      for(let j=0; j<parseInt(copied_form_data[i].price/copied_form_data[i].deposit); j++){
-        copied_data[j][copied_form_data[i].name] = copied_form_data[i].deposit;
+      for(let j=0; j<Math.ceil(copied_form_data[i].price/copied_form_data[i].deposit)/INTERVAL_OF_AVERAGE; j++){
+        deposit_sum = deposit_sum + deposit;
+        copied_data[j][copied_form_data[i].name] = deposit;
+        copied_data[j].savings = copied_data[j].savings - deposit_sum;
       }
     }
+    for(let j=Math.ceil(Math.ceil(copied_form_data[0].price/copied_form_data[0].deposit)/INTERVAL_OF_AVERAGE); j<copied_data.length; j++){
+      copied_data[j].savings = copied_data[j].savings - deposit_sum;
+    }
+
     for(let i=0; i<copied_form_data.length; i++){
       form_data_keys.push(copied_form_data[i].name);
     }
-    console.log(form_data_keys)
     this.setState((state) => {
       return{
         data:copied_data,
@@ -113,14 +121,14 @@ export default class App extends React.Component {
     });
     event.preventDefault()
   }
-
+  
   idChange(event) {
     this.setState({id: event.target.value});
   }
 
   passwordChange(event) {
     this.setState({password: event.target.value});
-  }  
+  } 
 // {[...Array(100)].map((item, index) => <span>ID:{index}</span>)}
   render(){
     return (
@@ -145,9 +153,9 @@ export default class App extends React.Component {
           <Line type="monotone" dataKey="expenditure" stroke="#ff6644" strokeWidth={2} />
           <Line type="monotone" dataKey="savings" stroke="#006400" strokeWidth={2} />
           <Line type="monotone" dataKey="border" stroke="#000000" strokeWidth={2} />
-          {[...this.state.form_data_keys].map((item, index) => <Line type="monotone" key={index} dataKey={item} stroke="#006400" strokeWidth={2} />)}
+        {/*{[...this.state.form_data_keys].map((item, index) => <Line type="monotone" key={index} dataKey={item} stroke="#006400" strokeWidth={2} />)}*/}
         </LineChart>
-      　口座番号<input type="text" value={this.state.id} onChange={this.idChange} />
+        口座番号<input type="text" value={this.state.id} onChange={this.idChange} />
         パスワード<input type="text" value={this.state.password} onChange={this.passwordChange} />
         <input onClick={this.handleGetByAPI} type="button" data={this.state.data} value="あなたの未来"/>
         </div>
